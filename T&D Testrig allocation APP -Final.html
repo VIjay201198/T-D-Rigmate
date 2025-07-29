@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>T&D Rig mate</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+   .solid-heading {
+  background: #0288d1;
+  color: #fff;
+  font-size: 2.3rem;
+  font-weight: 800;
+  border-radius: 12px;
+  padding: 18px 30px 18px 30px;
+  box-shadow: 0 5px 28px rgba(41, 98, 255, 0.11);
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 34px;
+  transition: background 0.3s;
+}
+.solid-heading:hover {
+  background: #00bfa5;
+}
+#numRigs,
+#samplesPerBelt {
+  width: 140px; /* fixed width */
+}
+label[for="numRigs"],
+label[for="samplesPerBelt"] 
+font-family: Calibri, sans-serif;{
+white-space: nowrap;
+  font-size: 1.1rem; /* Adjust as desired for emphasis */
+  font-weight: 800;   /* Optional: make it stand out */
+  color: #004d40;     /* Optional: stronger color for emphasis */
+}
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgb(0 0 0 / 0.07);
+      padding: 28px 36px 36px 36px;
+    }
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.2rem;
+      color: #00796b;
+      margin-bottom: 30px;
+      user-select: none;
+    }
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .form-group {
+      flex: 1 1 220px;
+      min-width: 180px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 18px; /* Controls space between label and select */
+    }
+    label {
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+label[for="numRigs"],
+ label[for="samplesPerBelt"]{
+  font-family: Calibri, sans-serif; /* from earlier */
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #004d40;
+  white-space: nowrap;
+  margin-right: 16px; /* <-- add this for gap */
+  display: inline-block;
+}
+
+#numRigs {
+  min-width: 150px;
+  font-size: 1.2rem;
+  /* Optionally add margin-left instead of label margin-right */
+  /* margin-left: 12px; */
+}
+    select,
+    input[type="date"],
+    input[type="number"] {
+      padding: 8px 10px;
+      border: 1.4px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    select:focus,
+    input[type="date"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #00796b;
+      box-shadow: 0 0 8px #00796b55;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 28px;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 8px 20px;
+      box-shadow: 0 5px 12px rgba(0, 121, 107, 0.3);
+      user-select: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      color: white;
+      min-width: 155px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 9px 24px rgba(0, 121, 107, 0.5);
+    }
+    .add-btn {
+      background: #f9a825;
+      box-shadow: 0 5px 15px rgba(249, 168, 37, 0.4);
+    }
+    .add-btn:hover {
+      background: #f57f17;
+    }
+    .new-btn {
+      background: #00796b;
+      margin-right: 8px;
+    }
+    .new-btn:hover {
+      background: #004d40;
+    }
+    .save-btn {
+      background: #0288d1;
+    }
+    .save-btn:hover {
+      background: #01579b;
+    }
+	.new-btn,
+	.save-btn {
+  	padding: 4px 10px;
+  	font-size: 0.88rem;
+  	min-width: 80px;
+	}
+.form-group .new-btn,
+.form-group .save-btn {
+  /* Remove block level display to let them sit inline */
+  display: inline-block;
+  margin-right: 8px; /* Small gap between buttons */
+}
+
+.form-group {
+  /* Only target the group that holds the buttons */
+  flex-direction: row !important; /* Force horizontal align just for buttons */
+  align-items: center;  /* Vertically center buttons */
+  gap: 0;               /* Optional, remove gap if not needed */
+}
+.button-row {
+  margin-left: 20px;    /* Adjust value as needed */
+}
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+    .card {
+      background: #e0f2f1;
+      border-radius: 16px;
+      padding: 24px 22px;
+      color: #004d40;
+      box-shadow: 0 6px 16px rgb(0 77 64 / 0.12);
+      flex: 1 1 160px;
+      text-align: center;
+      min-width: 140px;
+      user-select: none;
+      transition: background 0.25s;
+    }
+    .card:hover {
+      background: #b2dfdb;
+    }
+    .card h3 {
+font-family: Calibri, sans-serif;
+      margin: 0 0 14px 0;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .card p {
+font-family: Calibri, sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      margin: 0;
+      user-select: all;
+    }
+    .belt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .belt-input {
+      background: #fcfcfc;
+      border: 1.3px solid #d6d6d6;
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: nowrap;
+      transition: border-color 0.2s;
+    }
+    .belt-input:focus-within {
+      border-color: #00796b;
+      box-shadow: 0 0 6px #00796b55;
+    }
+    .belt-input label {
+      font-weight: 500;
+      font-size: 0.93rem;
+      color: #444;
+      min-width: 100px;
+      display: flex;
+      flex-direction: column;
+      margin-right: 18px;
+    }
+    .belt-input label input,
+    .belt-input label select {
+      margin-top: 6px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1.2px solid #bbb;
+      font-size: 1rem;
+      color: #222;
+      box-sizing: border-box;
+    }
+    .belt-input label input[type="date"] {
+      width: 138px;
+      min-width: 130px;
+      margin-right: 16px;
+    }
+    .belt-input label input[type="number"] {
+      width: 80px;
+      min-width: 60px;
+      margin-right: 8px;
+    }
+    .priority-badge {
+      background: #26a69a;
+      padding: 6px 18px;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 32px;
+      white-space: nowrap;
+      user-select: none;
+      flex-shrink: 0;
+      margin-left: 0;
+    }
+    .delete-btn {
+      margin-left: auto;
+      background: #e57373;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 32px;
+      border: none;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: background 0.25s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .delete-btn:hover {
+      background: #d32f2f;
+    }
+.belt-list {
+  gap: 8px; /* Reduce vertical space between belt entries */
+}
+
+.belt-input {
+  padding: 10px 12px;      /* Reduce padding inside each belt block */
+  gap: 12px;               /* Less horizontal gap between label/input groups */
+  font-size: 0.9rem;       /* Slightly smaller font size */
+  flex-wrap: wrap;         /* Allow wrapping if needed for smaller widths */
+}
+
+.belt-input label {
+  min-width: 80px;         /* Narrower labels */
+  margin-right: 10px;      /* Less horizontal spacing */
+  font-size: 0.9rem;
+}
+
+.belt-input label input,
+.belt-input label select {
+  padding: 6px 8px;        /* Smaller input padding */
+  font-size: 0.9rem;
+  width: auto;             /* Let inputs size naturally */
+  min-width: 100px;        /* Restrict minimum input width smaller than before */
+  margin-top: 4px;         /* Less top margin to labels */
+}
+
+/* Adjust buttons for smaller appearance */
+.belt-input .delete-btn {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  margin-left: 8px;
+}
+    /* ALLOCATION TABLE AND HEADINGS */
+    .allocation-scroll {
+      overflow-x: auto;
+      width: 100%;
+      margin-top: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgb(0 77 64 / 0.07);
+      background: white;
+      min-width: 600px;
+    }
+    th, td {
+      padding: 15px 20px;
+      text-align: left;
+      border-bottom: 1.4px solid #e1e1e1;
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+    th {
+      background-color: #26a69a;
+      color: white;
+      font-weight: 700;
+      font-size: 1.08rem;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+      user-select: none;
+    }
+    th:nth-child(2),th:nth-child(3) {
+      min-width: 185px;
+    }
+    .belt-badge {
+      background-color: #26a69a;
+      color: white;
+      display: inline-block;
+      padding: 5px 14px;
+      margin-right: 6px;
+      margin-bottom: 4px;
+      border-radius: 28px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      user-select: none;
+    }
+    .p1 { background-color: #d32f2f !important; }
+    .p2 { background-color: #f57c00 !important; }
+    .p3 { background-color: #fbc02d !important; color: #5d4037 !important; }
+    .p4 { background-color: #1976d2 !important; }
+    .p5 { background-color: #388e3c !important; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px !important;;
+      padding: 14px 18px !important;;
+      width: 300px !important;;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.16)!important;;
+      user-select: text;
+      font-size: 0.98rem;
+      font-family: Calibri, sans-serif;
+      flex-shrink: 0;
+    }
+    .modal-content h3 {
+      margin: 0 0 20px 0;
+      font-weight: 600;
+      color: #00796b;
+      text-align: center;
+      user-select: none;
+    }
+    .modal-content label {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #444;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .modal-content input,
+    .modal-content select {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1.3px solid #ccc;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+      font-family: inherit;
+      margin-bottom: 12px;
+    }
+    .modal-content input:focus,
+    .modal-content select:focus {
+      outline: none;
+      border-color: #00796b;
+      box-shadow: 0 0 8px #00796b77;
+    }
+    .modal-actions {
+      text-align: right;
+      margin-top: 8px;
+    }
+    .modal-actions button {
+      margin-left: 10px;
+      padding: 10px 26px;
+      font-weight: 600;
+      border-radius: 28px;
+    }
+    .modal-actions button:hover {
+      opacity: 0.88;
+    }
+    .history-panel {
+      margin-top: 30px;
+      background: #f0f4f3;
+      border-radius: 12px;
+      padding: 18px 14px 14px 18px;
+      box-shadow: 0 3px 10px rgba(0, 121, 107, 0.1);
+      border: 1.5px solid #b2dfdb;
+    }
+    .history-panel h3 {
+      margin-top: 0;
+      color: #00796b;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      user-select: none;
+    }
+    .history-panel button {
+      background: linear-gradient(40deg, #1de9b6 40%, #b388ff 90%);
+      color: #fff !important;
+      font-weight: 600;
+      margin-left: 15px;
+      padding: 6px 18px;
+      border-radius: 18px;
+      font-size: 0.98em;
+      margin-top: 2px;
+      border: none;
+      box-shadow: 0 2px 7px rgba(30, 150, 136, 0.13);
+      letter-spacing: 0.01em;
+      transition: background 0.23s;
+      user-select: none;
+      cursor: pointer;
+    }
+    .history-panel button:hover {
+      background: linear-gradient(60deg, #00bfa5 40%, #7c4dff 90%);
+      color: #fff !important;
+      opacity: 0.95;
+    }
+    /* Fixed footer owner text centered */
+    #ownerText {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #00796b;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 6px 12px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0, 121, 107, 0.3);
+      user-select: none;
+      pointer-events: none;
+      z-index: 9999;
+      font-family: 'Roboto', sans-serif;
+    }
+    @media (max-width: 720px) {
+      .form-grid {
+        flex-direction: column;
+        gap: 8px;
+  	}
+      }
+      .form-group {
+        min-width: auto;
+        width: 100%;
+      }
+      .belt-input {
+        flex-wrap: wrap;
+        gap: 8px 15px;
+        padding: 10px 12px;
+      }
+      .modal-content {
+        width: 90vw;
+      }
+      .dashboard, .allocation-scroll {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" role="main">
+    <h1 class="solid-heading">T&D Rig mate</h1>
+    <section aria-label="Global Test Rig Controls">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="numRigs">Number of Test Rigs</label>
+          <select id="numRigs">
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6</option><option>7</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="samplesPerBelt">Samples per V-Belt</label>
+          <select id="samplesPerBelt">
+            <option>5</option><option>4</option><option>3</option>
+          </select>
+        </div>
+        <div class="form-group">
+	<div class="button-row">
+	<button class="new-btn" onclick="newConfig()">🆕 New</button>
+	<button class="save-btn" onclick="saveConfig()">💾 Save</button>
+        </div>
+      </div>
+    </section>
+    <section class="dashboard" aria-label="Summary dashboard cards" role="region">
+      <div class="card" tabindex="0">
+        <h3>Test Rigs</h3>
+        <p id="rigCount">0</p>
+      </div>
+      <div class="card" tabindex="0">
+        <h3>V-Belts</h3>
+        <p id="beltCount">0</p>
+      </div>
+      <div class="card" tabindex="0">
+        <h3>Samples</h3>
+        <p id="sampleCount">0</p>
+      </div>
+      <div class="card" tabindex="0">
+        <h3>Days Needed</h3>
+        <p id="daysRequired">0</p>
+      </div>
+      <div class="card" tabindex="0">
+        <h3>End Date</h3>
+        <p id="completionDate">--</p>
+      </div>
+    </section>
+
+    <section aria-label="V-Belts configuration list" style="margin-top: 36px;">
+      <h3>V-Belts Configuration</h3>
+      <div id="beltList" class="belt-list" role="list"></div>
+    </section>
+
+    <section aria-label="Actions">
+      <div class="actions">
+        <button class="add-btn" onclick="openModal()" aria-label="Add New V-Belt">➕ Add New V-Belt</button>
+        <button class="add-btn" onclick="allocateRigs()">Allocate Rigs</button>
+      </div>
+    </section>
+
+    <section aria-label="Allocation output" style="margin-top: 40px;">
+      <div class="allocation-scroll">
+        <div id="allocationOutput"></div>
+      </div>
+    </section>
+
+    <section aria-label="Save History">
+      <div class="history-panel">
+        <h3>Save History</h3>
+        <div id="historyContainer"></div>
+      </div>
+    </section>
+  </div>
+  <div id="ownerText">This APP Idea and developed by VIJAYABALAJI JK Fenner</div>
+  <!-- Modal -->
+  <div id="beltModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <h3 id="modalTitle">Add V-Belt</h3>
+      <label>Belt Name
+        <input id="beltName" placeholder="V-Belt A" />
+      </label>
+      <label>Priority (1-5)
+        <select id="beltPriority">
+          <option value="1">1 (Highest)</option>
+          <option value="2">2</option>
+          <option value="3" selected>3 (Medium)</option>
+          <option value="4">4</option>
+          <option value="5">5 (Lowest)</option>
+        </select>
+      </label>
+      <label>Test Start Date
+        <input type="date" id="beltStart" />
+      </label>
+      <label>Days Per Belt Run
+        <input type="number" id="beltDays" min="1" value="15" />
+      </label>
+      <div class="modal-actions">
+        <button class="add-btn" onclick="addBelt()">Add Belt</button>
+        <button class="save-btn" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Animate the page title in browser tab
+    const titleText = "T&D Rig mate - Your Rig Scheduling Assistant   ";
+    let titleIndex = 0;
+    function animateTitle() {
+      document.title = titleText.substring(titleIndex) + titleText.substring(0, titleIndex);
+      titleIndex = (titleIndex + 1) % titleText.length;
+    }
+    setInterval(animateTitle, 200);
+
+    // App logic
+    const getToday = () => new Date().toISOString().split("T")[0];
+    let belts = [];
+    function computeGlobalCompletion(belts, rigs, samplesPerBelt) {
+      if (!belts.length) {
+        return { global: "--", rigs: Array.from({ length: rigs }, () => "--") };
+      }
+      const rigFree = Array.from({ length: rigs }, () => new Date(0));
+      const sorted = [...belts].sort((a, b) => a.priority !== b.priority ? a.priority - b.priority : new Date(a.startDate) - new Date(b.startDate));
+      sorted.forEach((belt) => {
+        for (let s = 0; s < samplesPerBelt; s++) {
+          let idx = 0;
+          for (let r = 1; r < rigs; r++) if (rigFree[r] < rigFree[idx]) idx = r;
+          const startTime = Math.max(rigFree[idx].getTime(), new Date(belt.startDate).getTime());
+          const finish = new Date(startTime + belt.days * 24 * 60 * 60 * 1000);
+          rigFree[idx] = finish;
+        }
+      });
+      const rigDates = rigFree.map((d) => d.toISOString().split("T")[0]);
+      const globalDate = rigDates.reduce((a, b) => (a > b ? a : b), rigDates[0]);
+      return { global: globalDate, rigs: rigDates };
+    }
+    function openModal() {
+      document.getElementById("beltModal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("beltModal").style.display = "none";
+      document.getElementById("beltName").value = "";
+      document.getElementById("beltPriority").value = "3";
+      document.getElementById("beltStart").value = "";
+      document.getElementById("beltDays").value = "15";
+    }
+    function addBelt() {
+      const name = document.getElementById("beltName").value.trim() || `V-Belt ${String.fromCharCode(65 + belts.length)}`;
+      const priority = parseInt(document.getElementById("beltPriority").value);
+      const startDate = document.getElementById("beltStart").value || getToday();
+      const days = parseInt(document.getElementById("beltDays").value);
+      belts.push({ id: name, priority, startDate, days });
+      saveToLocal(); renderBeltInputs(); closeModal();
+    }
+    function deleteBelt(idx) {
+      belts.splice(idx, 1);
+      saveToLocal();
+      renderBeltInputs();
+    }
+    function renderBeltInputs() {
+      const list = document.getElementById("beltList");
+      list.innerHTML = "";
+      belts.forEach((b, i) => {
+        list.insertAdjacentHTML(
+          "beforeend",
+          `<div class="belt-input">
+            <label>Belt
+              <input value="${b.id.replace(/"/g, "&quot;")}" onchange="belts[${i}].id=this.value; saveToLocal();" />
+            </label>
+            <span class="priority-badge priority-${b.priority}">P${b.priority}</span>
+            <label>Priority
+              <select onchange="belts[${i}].priority=parseInt(this.value); saveToLocal();">
+                ${[1, 2, 3, 4, 5].map(p => `<option value="${p}" ${b.priority === p ? "selected" : ""}>${p}</option>`).join("")}
+              </select>
+            </label>
+            <label>Start Date
+              <input type="date" value="${b.startDate}" onchange="belts[${i}].startDate=this.value; saveToLocal();" />
+            </label>
+            <label>Days
+              <input type="number" min="1" value="${b.days}" onchange="belts[${i}].days=parseInt(this.value); saveToLocal();" />
+            </label>
+            <button class="delete-btn" aria-label="Delete belt ${b.id}" onclick="deleteBelt(${i})">Delete</button>
+          </div>`
+        );
+      });
+      document.getElementById("beltCount").textContent = belts.length;
+      document.getElementById("sampleCount").textContent = belts.length * parseInt(document.getElementById("samplesPerBelt").value);
+    }
+    function saveToLocal() {
+      localStorage.setItem("belts", JSON.stringify(belts));
+    }
+    function loadFromLocal() {
+      belts = JSON.parse(localStorage.getItem("belts") || "[]");
+    }
+    function saveHistory(data) {
+      const hist = JSON.parse(localStorage.getItem("history") || "[]");
+      hist.unshift(data);
+      localStorage.setItem("history", JSON.stringify(hist.slice(0, 5)));
+      refreshHistoryUI();
+    }
+    function refreshHistoryUI() {
+      const container = document.getElementById("historyContainer");
+      container.innerHTML = "";
+      (JSON.parse(localStorage.getItem("history") || "[]")).forEach((h, idx) => {
+        container.insertAdjacentHTML(
+          "beforeend",
+          `<div style="margin-bottom:8px;">
+            <strong>#${idx + 1}</strong> – ${h.timestamp}
+            <button aria-label="Export saved configuration #${idx + 1}" onclick="exportHistory(${idx})">Export Excel</button>
+          </div>`
+        );
+      });
+    }
+    function newConfig() {
+      if (!confirm("Start a brand-new configuration? This clears all belts.")) return;
+      belts = [];
+      saveToLocal(); renderBeltInputs();
+      document.getElementById("completionDate").textContent = "--";
+      document.getElementById("daysRequired").textContent = "0";
+      document.getElementById("allocationOutput").innerHTML = "";
+      document.getElementById("rigCount").textContent = "0";
+      document.getElementById("sampleCount").textContent = "0";
+    }
+    function saveConfig() {
+      const rigs = parseInt(document.getElementById("numRigs").value);
+      const samples = parseInt(document.getElementById("samplesPerBelt").value);
+      const stamp = new Date().toLocaleString();
+      const { global: completion, rigs: rigEndDates } = computeGlobalCompletion(belts, rigs, samples);
+      const earliest = belts.length ? Math.min(...belts.map((b) => new Date(b.startDate))) : null;
+      const totalDays = earliest && completion !== "--" ? Math.round((new Date(completion) - earliest) / 86400000) : "--";
+      saveHistory({ timestamp: stamp, rigs, samples, totalDays, completion, belts: JSON.parse(JSON.stringify(belts)), rigEndDates });
+      alert(`Configuration saved at ${stamp}.`);
+    }
+    function calcEndDate(s, d) {
+      if (!s || !d || d < 1) return "--";
+      const dt = new Date(s);
+      dt.setDate(dt.getDate() + d);
+      return dt.toISOString().split("T")[0];
+    }
+    function allocateRigs() {
+      const rigs = parseInt(document.getElementById("numRigs").value);
+      const samples = parseInt(document.getElementById("samplesPerBelt").value);
+      if (!belts.length) {
+        alert("Add at least one V-Belt to allocate.");
+        return;
+      }
+      const { global: completion, rigs: rigDates } = computeGlobalCompletion(belts, rigs, samples);
+      const earliest = Math.min(...belts.map((b) => new Date(b.startDate)));
+      const totalDays = Math.round((new Date(completion) - earliest) / 86400000);
+      document.getElementById("daysRequired").textContent = totalDays;
+      document.getElementById("completionDate").textContent = completion;
+      const sorted = [...belts].sort((a, b) => a.priority !== b.priority ? a.priority - b.priority : new Date(a.startDate) - new Date(b.startDate));
+      const allocations = Array.from({ length: rigs }, (_, i) => ({ rig: `Rig ${i + 1}`, belts: [] }));
+      let pointer = 0;
+      sorted.forEach((belt) => {
+        for (let s = 1; s <= samples; s++) {
+          allocations[pointer % rigs].belts.push({
+            name: `${belt.id} (S${s})`,
+            p: belt.priority,
+            startDate: belt.startDate,
+            days: belt.days,
+            endDate: calcEndDate(belt.startDate, belt.days),
+          });
+          pointer++;
+        }
+      });
+      let html = `<table>
+        <thead>
+          <tr>
+            <th>Rig</th><th>Assigned Belts / Samples</th><th>Rig End Date</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      allocations.forEach((row, i) => {
+        html += `<tr>
+          <td>${row.rig}</td>
+          <td>`;
+        row.belts.forEach((b) => {
+          html += `<span class="belt-badge p${b.p}" title="Start: ${b.startDate} | End: ${b.endDate}">${b.name}</span>`;
+        });
+        html += `</td><td>${rigDates[i]}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById("allocationOutput").innerHTML = html;
+      saveHistory({ timestamp: new Date().toLocaleString(), rigs, samples, totalDays, completion, belts: JSON.parse(JSON.stringify(belts)), rigEndDates: rigDates });
+      document.getElementById("rigCount").textContent = rigs;
+      document.getElementById("sampleCount").textContent = belts.length * samples;
+    }
+    function exportHistory(idx) {
+      const hist = JSON.parse(localStorage.getItem("history") || "[]");
+      const data = hist[idx];
+      if (!data) return;
+      const rows = [
+        ["Rigs", data.rigs],
+        ["Samples per Belt", data.samples],
+        ["Total Belts", data.belts.length],
+        ["Days Required", data.totalDays],
+        ["Completion Date", data.completion],
+        [],
+        ["Rig", "Assigned Belts", "Rig End Date"],
+      ];
+      const allocations = Array.from({ length: data.rigs }, () => []);
+      let allocPointer = 0;
+      data.belts.sort((a, b) => a.priority !== b.priority ? a.priority - b.priority : new Date(a.startDate) - new Date(b.startDate)).forEach((belt) => {
+        for (let s = 1; s <= data.samples; s++) {
+          allocations[allocPointer % data.rigs].push(`${belt.id} (S${s})`);
+          allocPointer++;
+        }
+      });
+      allocations.forEach((beltList, i) => {
+        const rigEndDate = (data.rigEndDates && data.rigEndDates[i]) || "--";
+        rows.push([`Rig ${i + 1}`, beltList.join(", "), rigEndDate]);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, "TestRigData");
+      XLSX.writeFile(wb, `TestRigHistory_${idx + 1}_${data.timestamp.split(",")[0].replace(/\//g, "-")}.xlsx`);
+    }
+    window.onload = () => {
+      if (!localStorage.getItem("belts")) {
+        belts = [{ id: "V-Belt A", priority: 3, startDate: getToday(), days: 15 }];
+        saveToLocal();
+      }
+      loadFromLocal();
+      renderBeltInputs();
+      refreshHistoryUI();
+      document.getElementById("rigCount").textContent = 0;
+      document.getElementById("sampleCount").textContent = 0;
+    };
+  </script>
+</body>
+</html>
